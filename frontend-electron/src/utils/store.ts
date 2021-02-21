@@ -1,10 +1,12 @@
+import { app } from 'electron';
+
 import Store from 'electron-store';
 import yaml from 'js-yaml';
+import path from 'path';
 
 export const store = new Store({
   defaults: {
-    paperLocation: '/Users/trung/PaperDrive',
-    dataLocation: '/Users/trung/PaperDrive/data',
+    paperLocation: path.join(app?.getPath('home') || '.', 'PaperDrive'),
     autoDownload: false,
     paperList: {
       liveSearch: false,
@@ -29,7 +31,6 @@ export const store = new Store({
       ],
     },
   },
-  watch: true,
   fileExtension: 'yaml',
   serialize: yaml.dump,
   deserialize: yaml.load,
@@ -39,7 +40,7 @@ export const dataStore = new Store({
   name: 'data',
   defaults: {
     papers: null,
-    collections: [],
+    collections: null,
   },
   fileExtension: 'yaml',
   serialize: yaml.dump,

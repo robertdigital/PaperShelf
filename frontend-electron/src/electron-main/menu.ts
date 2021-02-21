@@ -217,8 +217,17 @@ export default class MenuBuilder {
         label: '&File',
         submenu: [
           {
-            label: '&Open',
-            accelerator: 'Ctrl+O',
+            label: 'Preferences',
+            submenu: [
+              {
+                label: 'General',
+                click: () => store.openInEditor(),
+              },
+              {
+                label: 'Saved Data',
+                click: () => dataStore.openInEditor(),
+              },
+            ],
           },
           {
             label: '&Close',

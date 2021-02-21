@@ -79,6 +79,7 @@ const Main = () => {
   const loadCollections = () => setAllCollections(getCollections());
 
   useEffect(() => {
+    /*
     onToggleDistractionFreeMode(() => {
       if (isDistractionFree) {
         setIsDistractionFree(false);
@@ -90,6 +91,7 @@ const Main = () => {
         setSideBarWidth(0);
       }
     });
+    */
   });
 
   useEffect(() => {
