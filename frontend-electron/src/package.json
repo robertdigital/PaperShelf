@@ -1,8 +1,8 @@
 {
-  "name": "PaperDrive",
-  "productName": "paper-drive",
-  "version": "0.0.2",
-  "description": "Paper Drive",
+  "name": "paper-shelf",
+  "productName": "PaperShelf",
+  "version": "0.0.1",
+  "description": "PaperShelf",
   "main": "electron-main/main.prod.js",
   "author": {
     "name": "Trung Dang",

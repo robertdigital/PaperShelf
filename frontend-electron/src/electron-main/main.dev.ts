@@ -75,7 +75,7 @@ const createWindow = async () => {
   };
 
   mainWindow = new BrowserWindow({
-    title: 'Paper Drive',
+    title: 'PaperShelf',
     show: false,
     width: 1024,
     height: 728,

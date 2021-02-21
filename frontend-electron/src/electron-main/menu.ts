@@ -56,10 +56,10 @@ export default class MenuBuilder {
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'PaperDrive',
+      label: 'PaperShelf',
       submenu: [
         {
-          label: 'About PaperDrive',
+          label: 'About PaperShelf',
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
@@ -78,7 +78,7 @@ export default class MenuBuilder {
         },
         { type: 'separator' },
         {
-          label: 'Hide PaperDrive',
+          label: 'Hide PaperShelf',
           accelerator: 'Command+H',
           selector: 'hide:',
         },

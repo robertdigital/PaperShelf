@@ -6,7 +6,7 @@ import path from 'path';
 
 export const store = new Store({
   defaults: {
-    paperLocation: path.join(app?.getPath('home') || '.', 'PaperDrive'),
+    paperLocation: path.join(app?.getPath('home') || '.', 'PaperShelf'),
     autoDownload: false,
     paperList: {
       liveSearch: false,

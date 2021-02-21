@@ -1,6 +1,6 @@
 {
-  "name": "paper-drive",
-  "productName": "PaperDrive",
+  "name": "paper-shelf",
+  "productName": "PaperShelf",
   "description": "Organize your scientific paper library.",
   "scripts": {
     "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
@@ -32,8 +32,8 @@
     ]
   },
   "build": {
-    "productName": "PaperDrive",
-    "appId": "com.trungd.PaperDrive",
+    "productName": "PaperShelf",
+    "appId": "com.trungd.PaperShelf",
     "files": [
       "dist/",
       "node_modules/",
@@ -89,12 +89,12 @@
     "publish": {
       "provider": "github",
       "owner": "trungd",
-      "repo": "PaperDrive"
+      "repo": "PaperShelf"
     }
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:trungd/PaperDrive.git"
+    "url": "git@github.com:trungd/PaperShelf.git"
   },
   "author": {
     "name": "Trung Dang",
@@ -103,7 +103,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/trungd/PaperDrive/issues"
+    "url": "https://github.com/trungd/PaperShelf/issues"
   },
   "keywords": [
     "electron",
@@ -298,6 +298,5 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  },
-  "version": "0.0.1"
+  }
 }
