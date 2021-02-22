@@ -14,8 +14,7 @@
     "start": "node -r @babel/register ./.erb/scripts/CheckPortInUse.js && cross-env yarn start:renderer",
     "start:main": "cross-env NODE_ENV=development electron -r ./.erb/scripts/BabelRegister src/electron-main/main.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.renderer.dev.babel.js",
-    "test": "jest",
-    "publish": "electron-builder build -p always"
+    "test": "jest"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -167,7 +166,7 @@
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/format-unicorn": "^1.1.2",
     "@types/history": "4.7.6",
-    "@types/jest": "^26.0.15",
+    "@types/jest": "^26.0.20",
     "@types/js-yaml": "^4.0.0",
     "@types/lodash": "^4.14.168",
     "@types/node": "14.14.10",
@@ -242,7 +241,7 @@
     "yarn-deduplicate": "^3.1.0"
   },
   "dependencies": {
-    "@fluentui/react-northstar": "0.52.0",
+    "@fluentui/react-northstar": "^0.52.0",
     "electron-context-menu": "^2.4.0",
     "electron-debug": "^3.1.0",
     "electron-dl": "^3.0.3",

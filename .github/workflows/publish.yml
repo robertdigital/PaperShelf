@@ -13,6 +13,10 @@ jobs:
       matrix:
         os: [macos-latest]
 
+    defaults:
+      run:
+        working-directory: desktop
+
     steps:
       - name: Checkout git repo
         uses: actions/checkout@v1
