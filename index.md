@@ -1,37 +1,24 @@
-## Welcome to GitHub Pages
+## PaperShelf
 
-You can use the [editor on GitHub](https://github.com/trungd/PaperShelf/edit/gh_pages/index.md) to maintain and preview the content for your website in Markdown files.
+PaperShelf is a simple yet elegant tool to search, browse, and organize papers for researchers. It gathers data from publicly available sources (e.g. arxiv) so you always get the official, complete, and up-to-date version and information across different sites.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Installation
 
-### Markdown
+PaperShelf is available in different platforms.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+<center>
+  
+|      | Download|
+|------|----------|
+| Mac OS | [Download](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-mac.dmg)|
+| Windows| [Download](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-win-Setup.exe)|
+| Linux | [Download](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-linux.AppImage)|
 
-```markdown
-Syntax highlighted code block
+</center>
 
-# Header 1
-## Header 2
-### Header 3
+### Highlight Features:
 
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/trungd/PaperShelf/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+- Search for papers on arxiv (more sources coming).
+- Download papers and index with metadata and auto-generated tags.
+- Add papers to your library and organize with *Tags* and *Collections*.
+- Render PDF files with readability.
