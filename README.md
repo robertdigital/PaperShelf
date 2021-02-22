@@ -2,9 +2,9 @@
 
 ## Why PaperShelf?
 
-As someone who does research, I often find myself lost in a bunch of opening tabs or spending time renaming and organizing PDF files in my Downloads folder. This inspires me to write PaperShelf.
+As someone who does research, I usually get lost in a bunch of browser tabs or have to manually rename and organize PDF files in my Downloads folder. My bookmarks get messy over time, and sometimes I couldn't recall a paper that I came across.
 
-The goal of the project is to provide a friendly and convenient tool to search, browse, and organize papers, so that you do not have a long list of tabs and bookmarks in your browser. PaperShelf gathers data from different publicly available sources (e.g. arxiv) so you always get the official, complete, and up-to-date version and information across different sites.
+The goal of this project is to develop a simple yet elegant tool to search, browse, and organize papers, so that you don't keep a long list of tabs and bookmarks in your browser. PaperShelf gathers data from different publicly available sources (e.g. arxiv) so you always get the official, complete, and up-to-date version and information across different sites.
 
 Some highlight features:
 
