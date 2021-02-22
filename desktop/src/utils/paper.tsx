@@ -2,6 +2,7 @@ import { shell, ipcRenderer } from 'electron';
 import fs from 'fs';
 import { pick } from 'lodash';
 import { ArxivPaper, searchArxiv } from './arxiv';
+import Collection from './collection';
 import { store, dataStore } from './store';
 
 class Paper {
@@ -37,6 +38,8 @@ class Paper {
   venue?: string;
 
   authorShort?: string;
+
+  removed = false;
 
   constructor(p: Record<string, unknown> | null = null) {
     if (p) {
@@ -149,8 +152,20 @@ class Paper {
     this.serialize();
   }
 
+  inCollection(c?: Collection) {
+    if (c) return this.id ? c.has(this.id) : false;
+    return this.inLibrary;
+  }
+
+  addToCollection(c: Collection) {
+    if (!this.id) this.serialize();
+    c.addPaper(this.id!);
+    this.serialize();
+  }
+
   remove() {
     if (this.id) {
+      this.remove = true;
       dataStore.delete(`papers.${this.id}`);
     }
   }
