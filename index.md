@@ -6,7 +6,6 @@ PaperShelf is a simple yet elegant tool to search, browse, and organize papers f
 
 PaperShelf is available in different platforms.
 
-<center>
   
 |      | Download|
 |------|----------|
@@ -14,7 +13,6 @@ PaperShelf is available in different platforms.
 | Windows| [Download](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-win-Setup.exe)|
 | Linux | [Download](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-linux.AppImage)|
 
-</center>
 
 ### Highlight Features:
 
