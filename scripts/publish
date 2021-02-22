@@ -1,3 +1,0 @@
-cd frontend-electron
-
-GH_TOKEN=88e497469d82dedd79543807226564d0a4fa90bb yarn run publish
