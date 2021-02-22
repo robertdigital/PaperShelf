@@ -1,5 +1,9 @@
 # PaperShelf
 
+![linter](https://github.com/trungd/PaperShelf/actions/workflows/linter.yml/badge.svg)
+![test](https://github.com/trungd/PaperShelf/actions/workflows/test.yml/badge.svg)
+![publish](https://github.com/trungd/PaperShelf/actions/workflows/publish.yml/badge.svg)
+
 ## Why PaperShelf?
 
 As someone who does research, I usually get lost in a bunch of browser tabs or have to manually rename and organize PDF files in my Downloads folder. My bookmarks get messy over time, and sometimes I couldn't recall a paper that I came across.
