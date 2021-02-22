@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
+  AcceptIcon,
+  AddIcon,
+  BookmarkIcon,
   Box,
   ButtonGroup,
   ButtonProps,
+  Divider,
   DownloadIcon,
   EditIcon,
   Flex,
@@ -12,13 +16,18 @@ import {
   SearchIcon,
   StarIcon,
   Text,
+  Toolbar,
+  ToolbarItemProps,
+  TrashCanIcon,
 } from '@fluentui/react-northstar';
 import { AiOutlineGlobal } from 'react-icons/ai';
 import { ipcRenderer } from 'electron';
+import Fuse from 'fuse.js';
 import Paper from '../utils/paper';
 import { searchArxiv } from '../utils/arxiv';
 import { store } from '../utils/store';
 import Collection from '../utils/collection';
+import CollectionToolbar from './CollectionToolbar';
 
 require('format-unicorn');
 
@@ -27,23 +36,25 @@ type PaperListProps = {
   onChange: (paper: Paper) => void;
   onShowInfo: () => void;
   // eslint-disable-next-line react/require-default-props
-  collection?: Collection;
-  allCollections: Collection[];
   allPapers: Paper[];
+  onRemovePaper: (paper: Paper) => void;
 };
 
 const PaperList = ({
   width,
   onChange,
   onShowInfo,
-  collection = undefined,
-  allCollections,
   allPapers,
+  onRemovePaper,
 }: PaperListProps) => {
   const [selectedIndex, setSelectedIndex] = useState<number>();
-
+  const [collection, setCollection] = useState<Collection>();
+  const [allCollections, setAllCollections] = useState<Collection[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [papers, setPapers] = useState<Paper[]>([]);
+  const [items, setItems] = useState<ListItemProps[]>([]);
+
+  const [menuOpenBookmark, setMenuOpenBookmark] = useState<boolean>(false);
 
   const getHeader = ({ title }: Paper) =>
     (store.get('paperList.titleFormat') as string).formatUnicorn({
@@ -57,48 +68,62 @@ const PaperList = ({
       venue,
     });
 
-  const getEndMedia = (p: Paper) => (
-    <ButtonGroup
-      buttons={
-        [
-          ...(p.inLibrary && !p.localPath
-            ? [
-                {
-                  icon: <DownloadIcon />,
-                  iconOnly: true,
-                  text: true,
-                  onClick: () => p.download(),
-                },
-              ]
-            : []),
-          ...(!p.inLibrary
-            ? [
-                {
-                  icon: <StarIcon />,
-                  iconOnly: true,
-                  text: true,
-                  onClick: () => p.addToLibrary(),
-                },
-              ]
-            : [
-                {
-                  icon: <EditIcon />,
-                  iconOnly: true,
-                  text: true,
-                  onClick: () => onShowInfo(),
-                },
-              ]),
-        ] as ButtonProps[]
-      }
-    />
-  );
+  const getEndMedia = (p: Paper, searchMode: boolean) => {
+    const cond = (
+      b: boolean,
+      ifTrue: ButtonProps[],
+      ifFalse: ButtonProps[] = []
+    ) => (b ? ifTrue : ifFalse);
 
-  const mapFn = (p: Paper) =>
+    return (
+      <ButtonGroup
+        buttons={
+          [
+            ...cond(p.inLibrary && !p.localPath && !searchMode, [
+              {
+                icon: <DownloadIcon />,
+                iconOnly: true,
+                text: true,
+                onClick: () => p.download(),
+              },
+            ]),
+            ...cond(!p.inLibrary || !p.inCollection(collection), [
+              {
+                icon: <StarIcon />,
+                iconOnly: true,
+                text: true,
+                onClick: () => {
+                  if (!p.inLibrary) {
+                    p.addToLibrary();
+                    allPapers.push(p);
+                  }
+                  if (collection && !p.inCollection(collection)) {
+                    p.addToCollection(collection);
+                  }
+                  setPaperList(papers, searchMode);
+                },
+              },
+            ]),
+            ...cond(p.inLibrary && !searchMode, [
+              {
+                icon: <EditIcon />,
+                iconOnly: true,
+                text: true,
+                onClick: () => onShowInfo(),
+              },
+            ]),
+          ] as ButtonProps[]
+        }
+      />
+    );
+  };
+
+  const mapFn = (p: Paper, searchMode: boolean) =>
     ({
-      key: p.id,
+      paper: p,
       header: getHeader(p),
       content: getContent(p),
-      endMedia: getEndMedia(p),
+      endMedia: getEndMedia(p, searchMode),
       contentMedia: p.inLibrary ? null : <Text content="arvix" color="red" />,
       headerMedia: p.inLibrary ? null : <AiOutlineGlobal />,
       onContextMenu: () => {
@@ -115,56 +140,139 @@ const PaperList = ({
     } as ListItemProps),
   } */
 
-  const refreshList = () => {
-    const papersInCollection = collection
-      ? allPapers.filter((p) => collection.papers.includes(p.id!))
-      : allPapers;
-    if (searchQuery === '') {
-      setPapers(papersInCollection);
-    } else if (searchQuery[0] === '#') {
+  const setPaperList = (papers: Paper[], searchMode: boolean) => {
+    setPapers(papers);
+
+    const getInCollectionItems = () => {
+      const inCollectionPapers = papers.filter((p) =>
+        collection ? p.id && collection.papers.includes(p?.id) : true
+      );
+
+      return [
+        ...(collection && searchMode
+          ? [
+              {
+                header: (
+                  <Divider
+                    content={`In Collection (${inCollectionPapers.length})`}
+                  />
+                ),
+                styles: {
+                  minHeight: 0,
+                },
+                selectable: false,
+              },
+            ]
+          : []),
+        ...inCollectionPapers.map((p) => mapFn(p, searchMode)),
+      ];
+    };
+
+    const getOutCollectionItems = () => {
+      if (!collection || !searchMode) return [];
+
+      const outCollectionPapers = papers.filter(
+        (p) => p.id && !collection.papers.includes(p?.id)
+      );
+      return [
+        {
+          header: (
+            <Divider content={`In Library (${outCollectionPapers.length})`} />
+          ),
+          styles: {
+            minHeight: 0,
+          },
+          selectable: false,
+        },
+        ...outCollectionPapers.map((p) => mapFn(p, searchMode)),
+      ];
+    };
+
+    const getWebSearchItems = () => {
+      return [];
+    };
+
+    setItems([
+      ...getInCollectionItems(),
+      ...getOutCollectionItems(),
+      ...getWebSearchItems(),
+    ]);
+  };
+
+  const refreshList = (currentQuery: string, search = false) => {
+    console.log(currentQuery);
+    // const papersInCollection = collection
+    //   ? allPapers.filter((p) => collection.papers.includes(p.id!))
+    //   : allPapers;
+
+    if (currentQuery === '') {
+      setPaperList(allPapers, false);
+    } else if (currentQuery[0] === '#') {
       const hashTags = searchQuery
         .split(' ')
         .map((s) => (s.length > 0 ? s.substring(1) : ''))
         .filter((s) => s !== '');
-      setPapers(
-        papersInCollection.filter((it) =>
+      setPaperList(
+        allPapers.filter((it) =>
           hashTags.every((tag) => [...it.tags].join(' ').indexOf(tag) >= 0)
-        )
+        ),
+        true
       );
     } else {
-      setPapers([]);
-      searchArxiv(searchQuery)
-        .then((items) =>
-          setPapers(
-            items.map((arxivPaper) => new Paper().fromArxivPaper(arxivPaper))
+      const searchResults: Paper[] = [];
+
+      const updateResults = (resPapers: Paper[]) => {
+        searchResults.push(
+          ...resPapers.filter(
+            (p) => !searchResults.map((rp) => rp.id).includes(p.id)
           )
-        )
-        .catch(() => {});
+        );
+        setPaperList(searchResults, true);
+      };
+
+      if (search) {
+        Promise.all([
+          searchArxiv(currentQuery).then((res) =>
+            updateResults(
+              res.map((arxivPaper) => new Paper().fromArxivPaper(arxivPaper))
+            )
+          ),
+        ]).catch(() => {});
+      } else {
+        const fuse = new Fuse(allPapers, {
+          keys: store.get('searchFields'),
+          threshold: store.get('searchThreshold'),
+        });
+        setPaperList(
+          fuse.search(currentQuery).map((e) => e.item),
+          true
+        );
+      }
     }
   };
 
-  useEffect(() => {
-    if (searchQuery === '') {
-      refreshList();
-      return;
-    }
-    if (!store.get('paperList.liveSearch')) return;
-    refreshList();
-    // TODO: debouncing
-    // return () => { clearTimeout(timer); };
-  }, [searchQuery]);
-  useEffect(refreshList, [collection, allCollections, allPapers]);
+  const onSearchQueryChange = (query: string) => {
+    setSearchQuery(query);
+    refreshList(query);
+  };
+
+  useEffect(() => refreshList(searchQuery), [collection, allPapers]);
 
   return (
     <Flex fill column>
+      <CollectionToolbar
+        onChangeCollection={(c) => setCollection(c)}
+        allCollections={allCollections}
+        setAllCollections={setAllCollections}
+      />
       <Input
         fluid
         icon={<SearchIcon />}
         value={searchQuery}
         placeholder="Input paper title or URL..."
-        onChange={(_, props) => setSearchQuery(props!.value)}
+        onChange={(_, props) => onSearchQueryChange(props!.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') refreshList();
+          if (e.key === 'Enter') refreshList(searchQuery, true);
         }}
         clearable
       />
@@ -174,7 +282,7 @@ const PaperList = ({
           overflow: 'auto',
           width: `${width}px`,
           position: 'relative',
-          height: `calc(100% - 32px)`,
+          height: `calc(100% - 96px)`,
         }}
       >
         <List
@@ -182,15 +290,70 @@ const PaperList = ({
           truncateHeader
           truncateContent
           defaultSelectedIndex={-1}
-          items={papers.map(mapFn)}
+          items={items}
           selectedIndex={selectedIndex}
           onSelectedIndexChange={(_, p) => {
             setSelectedIndex(p?.selectedIndex);
             if (p?.selectedIndex !== undefined)
-              onChange(papers[p?.selectedIndex]);
+              onChange(items[p?.selectedIndex].paper);
           }}
         />
       </Box>
+
+      <Toolbar
+        items={
+          [
+            {
+              key: 'collection',
+              icon: <BookmarkIcon />,
+              title: 'Add to Collection',
+              menu: allCollections.map((c) => ({
+                key: c.key,
+                content: c.name,
+                icon:
+                  papers[selectedIndex!]?.id &&
+                  papers[selectedIndex!].inCollection(c) ? (
+                    <AcceptIcon />
+                  ) : (
+                    <AddIcon />
+                  ),
+                onClick: () => {
+                  if (
+                    selectedIndex &&
+                    papers[selectedIndex] &&
+                    papers[selectedIndex].id
+                  ) {
+                    c.toggle(papers[selectedIndex].id!);
+                  }
+                },
+              })),
+              menuOpen: menuOpenBookmark,
+              onMenuOpenChange: (_, p) => setMenuOpenBookmark(p?.menuOpen),
+              disabled:
+                selectedIndex === undefined || !papers[selectedIndex].inLibrary,
+            },
+            {
+              icon: <DownloadIcon />,
+              title: 'Download',
+              disabled:
+                selectedIndex === undefined ||
+                !papers[selectedIndex].inLibrary ||
+                papers[selectedIndex].getLocalPath(),
+              onClick: () => papers[selectedIndex!]?.download(),
+            },
+            {
+              kind: 'divider',
+            },
+            {
+              icon: <TrashCanIcon />,
+              title: 'Remove from Library',
+              disabled:
+                selectedIndex === undefined || !papers[selectedIndex].inLibrary,
+              onClick: () => onRemovePaper(papers[selectedIndex]),
+            },
+          ] as ToolbarItemProps[]
+        }
+      />
     </Flex>
   );
 };
