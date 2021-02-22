@@ -49,7 +49,7 @@ const NewCollectionPopup = ({ onAdd }: { onAdd: (name: string) => void }) => {
 type CollectionToolbarProps = {
   onChangeCollection: (c: Collection) => void;
   allCollections: Collection[];
-  setAllCollections: (c: Collection) => void;
+  setAllCollections: (cs: Collection[]) => void;
 };
 
 const CollectionToolbar = ({
@@ -58,16 +58,12 @@ const CollectionToolbar = ({
   setAllCollections,
 }: CollectionToolbarProps) => {
   const [collection, setCollection] = useState<Collection>();
-  const [] = useState<boolean>();
   const [menuOpenCollections, setMenuOpenCollections] = useState<boolean>();
   const [menuOpenNewCollection, setMenuOpenNewCollection] = useState<boolean>(
     false
   );
 
-  const loadCollections = () => setAllCollections(getCollections());
-  useEffect(() => {
-    loadCollections();
-  }, []);
+  useEffect(() => setAllCollections(getCollections()), []);
 
   const changeCollection = (c: Collection) => {
     setCollection(c);

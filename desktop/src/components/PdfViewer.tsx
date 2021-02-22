@@ -3,7 +3,6 @@ import React, { ElementRef, useEffect, useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import {
   Box,
-  DownloadIcon,
   Flex,
   OpenOutsideIcon,
   ShareGenericIcon,

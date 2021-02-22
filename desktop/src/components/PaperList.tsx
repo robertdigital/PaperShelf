@@ -56,6 +56,65 @@ const PaperList = ({
 
   const [menuOpenBookmark, setMenuOpenBookmark] = useState<boolean>(false);
 
+  const setPaperList = (paperList: Paper[], searchMode: boolean) => {
+    setPapers(paperList);
+
+    const getInCollectionItems = () => {
+      const inCollectionPapers = paperList.filter((p) =>
+        collection ? p.id && collection.papers.includes(p?.id) : true
+      );
+
+      return [
+        ...(collection && searchMode
+          ? [
+              {
+                header: (
+                  <Divider
+                    content={`In Collection (${inCollectionPapers.length})`}
+                  />
+                ),
+                styles: {
+                  minHeight: 0,
+                },
+                selectable: false,
+              },
+            ]
+          : []),
+        ...inCollectionPapers.map((p) => mapFn(p, searchMode)),
+      ];
+    };
+
+    const getOutCollectionItems = () => {
+      if (!collection || !searchMode) return [];
+
+      const outCollectionPapers = paperList.filter(
+        (p) => p.id && !collection.papers.includes(p?.id)
+      );
+      return [
+        {
+          header: (
+            <Divider content={`In Library (${outCollectionPapers.length})`} />
+          ),
+          styles: {
+            minHeight: 0,
+          },
+          selectable: false,
+        },
+        ...outCollectionPapers.map((p) => mapFn(p, searchMode)),
+      ];
+    };
+
+    const getWebSearchItems = () => {
+      return [];
+    };
+
+    setItems([
+      ...getInCollectionItems(),
+      ...getOutCollectionItems(),
+      ...getWebSearchItems(),
+    ]);
+  };
+
   const getHeader = ({ title }: Paper) =>
     (store.get('paperList.titleFormat') as string).formatUnicorn({
       title,
@@ -139,65 +198,6 @@ const PaperList = ({
       </Flex>),
     } as ListItemProps),
   } */
-
-  const setPaperList = (papers: Paper[], searchMode: boolean) => {
-    setPapers(papers);
-
-    const getInCollectionItems = () => {
-      const inCollectionPapers = papers.filter((p) =>
-        collection ? p.id && collection.papers.includes(p?.id) : true
-      );
-
-      return [
-        ...(collection && searchMode
-          ? [
-              {
-                header: (
-                  <Divider
-                    content={`In Collection (${inCollectionPapers.length})`}
-                  />
-                ),
-                styles: {
-                  minHeight: 0,
-                },
-                selectable: false,
-              },
-            ]
-          : []),
-        ...inCollectionPapers.map((p) => mapFn(p, searchMode)),
-      ];
-    };
-
-    const getOutCollectionItems = () => {
-      if (!collection || !searchMode) return [];
-
-      const outCollectionPapers = papers.filter(
-        (p) => p.id && !collection.papers.includes(p?.id)
-      );
-      return [
-        {
-          header: (
-            <Divider content={`In Library (${outCollectionPapers.length})`} />
-          ),
-          styles: {
-            minHeight: 0,
-          },
-          selectable: false,
-        },
-        ...outCollectionPapers.map((p) => mapFn(p, searchMode)),
-      ];
-    };
-
-    const getWebSearchItems = () => {
-      return [];
-    };
-
-    setItems([
-      ...getInCollectionItems(),
-      ...getOutCollectionItems(),
-      ...getWebSearchItems(),
-    ]);
-  };
 
   const refreshList = (currentQuery: string, search = false) => {
     console.log(currentQuery);
