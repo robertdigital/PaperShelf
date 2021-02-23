@@ -1,7 +1,7 @@
 {
   "name": "paper-shelf",
   "productName": "PaperShelf",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "PaperShelf",
   "main": "electron-main/main.prod.js",
   "author": {
