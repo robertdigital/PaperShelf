@@ -8,9 +8,9 @@ PaperShelf is available in different platforms.
 
 |  | Download |
 |----|------|
-| Mac OS | [[.dmg]](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-mac.dmg) |
+| Mac OS | [[.dmg]](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-mac.dmg) - [[.zip]](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-mac.zip) |
 | Windows | [[.exe]](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-win-Setup.exe) |
-| Linux | [[.AppImage]](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-linux.AppImage) |
+| Linux | [[.AppImage]](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-linux.AppImage) (recommended) - [[.deb]](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-linux.deb) |
 
 
 ### Highlight Features:
