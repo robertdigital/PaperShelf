@@ -6,9 +6,11 @@ PaperShelf is a simple yet elegant tool to search, browse, and organize papers f
 
 PaperShelf is available in different platforms.
 
-- Mac OS: [.dmg](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-mac.dmg)
-- Windows: [.exe](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-win-Setup.exe)
-- Linux: [.AppImage](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-linux.AppImage)
+|  | Download |
+|----|------|
+| Mac OS | [[.dmg]](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-mac.dmg) |
+| Windows | [[.exe]](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-win-Setup.exe) |
+| Linux | [[.AppImage]](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-linux.AppImage) |
 
 
 ### Highlight Features:
