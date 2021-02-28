@@ -2,10 +2,10 @@ import argparse
 from scholarly import scholarly, ProxyGenerator
 import json
 
-pg = ProxyGenerator()
-pg.Tor_Internal(tor_cmd="tor")
+# pg = ProxyGenerator()
+# pg.Tor_Internal(tor_cmd="tor")
 # pg.FreeProxies()
-scholarly.use_proxy(pg)
+# scholarly.use_proxy(pg)
 
 
 def search_paper(query: str):

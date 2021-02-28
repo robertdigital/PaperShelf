@@ -174,29 +174,23 @@ export default class MenuBuilder {
       label: 'Help',
       submenu: [
         {
-          label: 'Learn More',
+          label: 'Home Page',
           click() {
-            shell.openExternal('https://electronjs.org');
+            shell.openExternal('https://trungd.github.io/PaperShelf');
           },
         },
         {
-          label: 'Documentation',
+          label: 'Preferences',
           click() {
             shell.openExternal(
-              'https://github.com/electron/electron/tree/master/docs#readme'
+              'https://trungd.github.io/PaperShelf/preferences'
             );
           },
         },
         {
-          label: 'Community Discussions',
+          label: 'Issues and Feature Requests',
           click() {
-            shell.openExternal('https://www.electronjs.org/community');
-          },
-        },
-        {
-          label: 'Search Issues',
-          click() {
-            shell.openExternal('https://github.com/electron/electron/issues');
+            shell.openExternal('https://github.com/trungd/PaperShelf/issues');
           },
         },
       ],
@@ -284,29 +278,23 @@ export default class MenuBuilder {
         label: 'Help',
         submenu: [
           {
-            label: 'Learn More',
+            label: 'Home Page',
             click() {
-              shell.openExternal('https://electronjs.org');
+              shell.openExternal('https://trungd.github.io/PaperShelf');
             },
           },
           {
-            label: 'Documentation',
+            label: 'Preferences',
             click() {
               shell.openExternal(
-                'https://github.com/electron/electron/tree/master/docs#readme'
+                'https://trungd.github.io/PaperShelf/preferences'
               );
             },
           },
           {
-            label: 'Community Discussions',
+            label: 'Issues and Feature Requests',
             click() {
-              shell.openExternal('https://www.electronjs.org/community');
-            },
-          },
-          {
-            label: 'Search Issues',
-            click() {
-              shell.openExternal('https://github.com/electron/electron/issues');
+              shell.openExternal('https://github.com/trungd/PaperShelf/issues');
             },
           },
         ],
