@@ -24,4 +24,4 @@ PaperShelf is available in different platforms.
 
 ### Preferences
 
-Settings for the app can be modified by editing `config.yaml`. See [here](./settings) for details.
+Preferences for the app can be modified by editing `config.yaml`. See [here](./preferences) for details.
