@@ -15,9 +15,13 @@ PaperShelf is available in different platforms.
 | Linux | [[.AppImage]](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-linux.AppImage) (recommended) - [[.deb]](https://github.com/trungd/PaperShelf/releases/latest/download/PaperShelf-linux.deb) |
 
 
-### Highlight Features:
+### Highlight Features
 
 - Search for papers on ArXiv, Semantic Scholar (more sources coming).
 - Download papers and index with metadata and auto-generated tags.
 - Add papers to your library and organize with *Tags* and *Collections*.
 - Render PDF files with readability.
+
+### Preferences
+
+Settings for the app can be modified by editing `config.yaml`. See [here](./settings) for details.
