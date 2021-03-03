@@ -1,15 +1,15 @@
-# Preferences
+## Preferences
 
-Preferences for PaperShelf can be modified by editing `config.yaml`. This file can be quickly accessed by choosing PaperShlef > Preferences > General (Mac OS) or Files > Preferences > General (other platforms).
+Preferences for the app can be modified by editing `config.yaml`. This file can be quickly accessed by choosing PaperShlef > Preferences > General (Mac OS) or Files > Preferences > General (other platforms). Available fields are listed below.
 
 - `paperLocation`: Local path to save downloaded papers
 - `autoDownload` (not supported): Automatically download paper when added to Library
-- `paperList`: 
+- `paperList`:
   - `headerFormat`: Text to show for the header in the paper list. Default: `{title}`
   - `contentFormat`: Text to show for the content in the paper list. Default: `{authorShort} ({venueAndYear})`
   - `expandedHeaderFormat`: Text to show for the header in the paper list when expanded. Default: `{title} ({authorShort}, {venueAndYear)`
   - `expandedContentFormat`: Text to show for the content in the paper list when expanded. Default: `{abstract}`
-- `paperSources`: Api key and access info for services. 
+- `paperSources`: Api key and access info for services.
 - `searchPaperSources`: Sources used to search for papers. Currently supported: `arXiv`, `Google Scholar`
 - `fetchPaperSources`: Sources used to fetch paper info. Currently supported: `arXiv`, `Semantic Scholar`
 - `searchFields`: Fields to look at when searching papers in Library
