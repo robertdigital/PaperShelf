@@ -1,6 +1,6 @@
 ## Preferences
 
-Preferences for the app can be modified by editing `config.yaml`. This file can be quickly accessed by choosing PaperShlef > Preferences > General (Mac OS) or Files > Preferences > General (other platforms). Available fields are listed below.
+Preferences for the app can be modified by editing `config.yaml`. This file can be quickly accessed via PaperShlef > Preferences > General (Mac OS) or Files > Preferences > General (other platforms). Available fields are listed below.
 
 - `paperLocation`: Local path to save downloaded papers
 - `autoDownload` (not supported): Automatically download paper when added to Library
