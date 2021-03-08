@@ -1,16 +1,14 @@
 # PaperShelf
 
-<p align="center">
 [![Version](https://img.shields.io/github/v/release/trungd/PaperShelf)](https://github.com/trungd/PaperShelf/releases)
 [![Download](https://img.shields.io/github/downloads/trungd/PaperShelf/total)](https://github.com/trungd/PaperShelf/releases)
 [![Issues](https://img.shields.io/github/issues/trungd/PaperShelf)](https://github.com/trungd/PaperShelf/issues)
 [![Test](https://github.com/trungd/PaperShelf/actions/workflows/test.yml/badge.svg)](https://github.com/trungd/PaperShelf/actions/workflows/test.yml)
 [![Publish](https://github.com/trungd/PaperShelf/actions/workflows/publish.yml/badge.svg)](https://github.com/trungd/PaperShelf/actions/workflows/publish.yml)
-</p>
 
 ![Screenshot](./screenshot.png)
 
-## Why [PaperShelf](trungd.github.io/papershelf/)?
+## Why [PaperShelf](https://trungd.github.io/PaperShelf/)?
 
 As someone doing research, I usually get lost in a bunch of browser tabs or have to manually rename and organize PDF files in my Downloads folder. My bookmarks get messy over time, and sometimes I couldn't recall that paper I came across.
 
