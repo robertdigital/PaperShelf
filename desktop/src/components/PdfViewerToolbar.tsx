@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
+  BulletsIcon,
   OpenOutsideIcon,
   ShareGenericIcon,
   Toolbar,
@@ -22,6 +23,7 @@ const PdfViewerToolbar = ({
   paper,
 }: PdfViewerToolbarProps) => {
   const [toolBarItems, setToolBarItems] = useState<string[]>([]);
+  const [outlineMenuOpen, setOutlineMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
     setToolBarItems(store.get('pdfViewerToolbar'));
@@ -62,6 +64,18 @@ const PdfViewerToolbar = ({
       key: 'share',
       title: 'Share',
       disabled: !paper,
+    },
+    outline: {
+      icon: <BulletsIcon />,
+      key: 'outline',
+      disable: !paper || !paper?.pdfInfo?.outline,
+      menu: paper?.pdfInfo?.outline?.map(({ name }) => ({
+        key: name,
+        text: true,
+        content: name,
+      })),
+      menuOpen: outlineMenuOpen,
+      onMenuOpenChange: (_, { menuOpen }) => setOutlineMenuOpen(menuOpen),
     },
   } as Record<string, ToolbarItemProps>;
 

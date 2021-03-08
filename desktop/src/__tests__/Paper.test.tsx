@@ -12,12 +12,11 @@ describe('Paper', () => {
     const p = new Paper({
       title: 'hello',
       authors: ['me'],
-      tags: ['year:2015', 'venue:ICML'],
+      year: '2015',
+      venue: 'ICML',
     });
     p.refresh();
     expect(p.id).toEqual('me2015hello');
-    expect(p.year).toEqual('2015');
-    expect(p.venue).toEqual('ICML');
     expect(p.venueAndYear).toEqual('ICML 2015');
   });
 });
