@@ -94,6 +94,7 @@ class Paper {
   }
 
   serialize() {
+    if (!this.inLibrary) return;
     this.refresh();
 
     if (!this.dateAdded) {
@@ -119,10 +120,10 @@ class Paper {
         'thumbnail',
         'dateAdded',
         'dateModified',
+        'dateFetched',
         'read',
       ])
     );
-    this.refresh();
   }
 
   saveCache() {
@@ -279,6 +280,7 @@ class Paper {
   }
 
   async fetch() {
+    console.trace();
     this.isFetching = true;
     await fetchPaper(this);
 

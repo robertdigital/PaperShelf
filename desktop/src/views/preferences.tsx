@@ -75,6 +75,9 @@ export default function Preferences() {
     paperListExpandedContentFormat,
     setPaperListExpandedContentFormat,
   ] = useState<string>();
+  const [paperListActionButtons, setPaperListActionButtons] = useState<
+    string[]
+  >([]);
   const [searchPaperSources, setSearchPaperSources] = useState<string[]>([]);
   const [fetchPaperSources, setFetchPaperSources] = useState<string[]>([]);
 
@@ -108,6 +111,11 @@ export default function Preferences() {
       'paperList.expandedContentFormat',
       paperListExpandedContentFormat,
       setPaperListExpandedContentFormat,
+    ],
+    [
+      'paperListActionButtons',
+      paperListActionButtons,
+      setPaperListActionButtons,
     ],
     ['searchPaperSources', searchPaperSources, setSearchPaperSources],
     ['fetchPaperSources', fetchPaperSources, setFetchPaperSources],
@@ -182,6 +190,19 @@ export default function Preferences() {
               onChange={(_, p) => {
                 setPaperListExpandedContentFormat(p?.value);
               }}
+            />,
+            <FormDropdown
+              key="action-buttons"
+              fluid
+              multiple
+              value={paperListActionButtons}
+              onChange={(_, p) => {
+                setPaperListActionButtons(p?.value);
+              }}
+              items={['star', 'info', 'add'].sort()}
+              noResultsMessage="We couldn't find any matches."
+              a11ySelectedItemsMessage="Press Delete or Backspace to remove"
+              label="Action Buttons"
             />,
           ]}
         />

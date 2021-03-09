@@ -26,6 +26,7 @@ type PdfViewerProps = {
   width: number;
   paper: Paper | null;
   addToLibrary: (paper: Paper) => void;
+  showInfo: () => void;
 };
 
 const stringToHighlight = 'deep';
@@ -56,7 +57,12 @@ function highlightPattern(text: string) {
   //   .slice(0, -1);
 }
 
-function PdfViewer({ width, paper = null, addToLibrary }: PdfViewerProps) {
+function PdfViewer({
+  width,
+  paper = null,
+  addToLibrary,
+  showInfo,
+}: PdfViewerProps) {
   const padLeft = 8;
   const padRight = 0;
   const padTop = 8;
@@ -222,6 +228,7 @@ function PdfViewer({ width, paper = null, addToLibrary }: PdfViewerProps) {
         zoomPercentage={zoomPercentage}
         zoom={zoom}
         paper={paper}
+        showInfo={showInfo}
       />
       <Box
         style={{
@@ -270,7 +277,7 @@ function PdfViewer({ width, paper = null, addToLibrary }: PdfViewerProps) {
           content={{
             content: (
               <PaperInfoPopup
-                paper={popupInfo?.dest?.paper}
+                paper={popupInfo?.dest?.paper || null}
                 onLoaded={() => popperRef?.current?.updatePosition()}
                 addToLibrary={addToLibrary}
               />
@@ -320,20 +327,18 @@ function PdfViewer({ width, paper = null, addToLibrary }: PdfViewerProps) {
                         pageRef[i] = el;
                       }}
                     >
-                      <Page
-                        width={pageWidth}
-                        key={`page_${i + 1}`}
-                        pageIndex={
-                          currentPage - 1 <= i && i <= currentPage + 1
-                            ? i
-                            : undefined
-                        }
-                        onRenderSuccess={() => onRenderSuccess(i)}
-                        customTextRenderer={customTextRenderer}
-                        onLoadSuccess={onPageLoadSuccess}
-                        noData={<Box style={{ height: pageHeight }} />}
-                        loading={<Box style={{ height: pageHeight }} />}
-                      />
+                      {currentPage - 1 <= i && i <= currentPage + 1 && (
+                        <Page
+                          width={pageWidth}
+                          key={`page_${i + 1}`}
+                          pageIndex={i}
+                          onRenderSuccess={() => onRenderSuccess(i)}
+                          customTextRenderer={customTextRenderer}
+                          onLoadSuccess={onPageLoadSuccess}
+                          noData={<Box style={{ height: pageHeight }} />}
+                          loading={<Box style={{ height: pageHeight }} />}
+                        />
+                      )}
                     </div>
                   </Box>
                 </Box>

@@ -46,7 +46,7 @@ const score: (a: string, b: string) => number = function (a, b) {
   if (a.length === 0) return b.length;
   if (b.length === 0) return a.length;
 
-  if (a.length !== b.length) return score(a.slice(0, a.length), b);
+  if (a.length > b.length) return score(a.slice(0, b.length), b);
 
   const matrix = [];
 
@@ -140,7 +140,6 @@ const mapDestinations = async (
             .sort((a, b) => a.score - b.score)[0];
 
           citedPaper = p?.ref;
-          console.log(citedPaper);
         }
 
         return [
@@ -176,7 +175,7 @@ export async function processPdf(pdfUrl: string, references: SimplePaper[]) {
 
   const pageNums = Array.from(Array(maxPages).keys());
   const pages: pdfjs.PDFPageProxy[] = await Promise.all(
-    pageNums.map((j) => pdfDoc.getPage(j))
+    pageNums.map((j) => pdfDoc.getPage(j + 1))
   );
 
   const allText: pdfjs.TextContentItem[][] = await Promise.all(

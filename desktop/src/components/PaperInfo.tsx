@@ -286,6 +286,10 @@ export default function PaperInfo({
               items: ['Date Modified', paper?.dateModified?.toLocaleString()],
             },
             {
+              key: 'dateUpdated',
+              items: ['Date Updated', paper?.dateFetched?.toLocaleString()],
+            },
+            {
               key: 'starred',
               items: ['Starred', paper?.starred ? '✓' : '✗'],
             },

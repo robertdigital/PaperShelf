@@ -1,13 +1,14 @@
 import { Flex, Header, Button, AddIcon, Text } from '@fluentui/react-northstar';
 import React, { useEffect, useState } from 'react';
 import Paper, { fetchPaper } from '../utils/paper';
+import { SimplePaper } from '../utils/simplepaper';
 
 const PaperInfoPopup = ({
   paper,
   onLoaded,
   addToLibrary,
 }: {
-  paper: Paper | null;
+  paper: SimplePaper | null;
   onLoaded: () => void;
   addToLibrary: (p: Paper) => void;
 }) => {

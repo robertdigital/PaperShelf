@@ -120,7 +120,8 @@ const Main = () => {
               <PaperList
                 expanded={view === View.SideBarOnly}
                 allPapers={allPapers}
-                onChange={(p) => setSelectedPaper(p)}
+                addToLibrary={addToLibrary}
+                onChange={(p) => setSelectedPaper(p || null)}
                 onShowInfo={() => setShowPaperInfo(true)}
                 onRemovePaper={(p) => removePaper(p)}
                 onExpand={(val: boolean) =>
@@ -147,6 +148,9 @@ const Main = () => {
                   paper={selectedPaper}
                   width={pdfWidth}
                   addToLibrary={addToLibrary}
+                  showInfo={() => {
+                    setShowPaperInfo(true);
+                  }}
                 />
               )}
             </Box>

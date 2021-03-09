@@ -17,6 +17,7 @@ export const store = new Store({
       expandedHeaderFormat: '{title} ({authorShort}, {venueAndYear})',
       expandedContentFormat: '{abstract}',
     },
+    paperListActionButtons: ['star'],
     paperSources: {
       'Microsoft Research': {
         primaryKey: null,
@@ -26,12 +27,20 @@ export const store = new Store({
     searchPaperSources: ['arXiv'],
     fetchPaperSources: ['arXiv', 'Semantic Scholar'],
     searchFields: ['title', 'tags', 'authors', 'abstract'],
+    searchThreshold: 0.4,
     view: {
       showSideBar: true,
       sideBarWidth: 300,
     },
     defaultTags: ['year:2020', 'year:2021'],
-    pdfViewerToolbar: ['zoomIn', 'zoomOut', 'divider', 'open'],
+    pdfViewerToolbar: [
+      'info',
+      'divider',
+      'zoomIn',
+      'zoomOut',
+      'divider',
+      'open',
+    ],
     defaultSortBy: 'dateAdded',
     sync: {
       method: 'none',
