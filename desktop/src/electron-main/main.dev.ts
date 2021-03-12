@@ -222,7 +222,6 @@ ipcMain.on('context', (_, { itemType, itemId }) => {
   contextMenu?.popup({
     window: mainWindow,
   });
-  console.log('main-context-menu', itemType, itemId);
 });
 
 onRebuildApplicationMenu(

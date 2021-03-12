@@ -42,7 +42,6 @@ export default (
   collections?: { name: string; key: string; checked: boolean }[]
 ) => {
   const isDarwin = process.platform === 'darwin';
-  console.log('id: ', paper?.id);
 
   if (
     process.env.NODE_ENV === 'development' ||

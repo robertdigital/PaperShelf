@@ -383,7 +383,6 @@ const PaperList = forwardRef(
       //   ? allPapers.filter((p) => collection.papers.includes(p.id!))
       //   : allPapers;
       if (currentQuery === '') {
-        console.log(allPapers);
         setPapers(allPapers);
         setSearchMode(false);
       } else if (currentQuery[0] === '#') {

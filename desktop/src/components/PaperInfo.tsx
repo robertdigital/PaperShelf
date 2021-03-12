@@ -96,7 +96,6 @@ export default function PaperInfo({
       .fetch()
       .then(() => setIsFetching(false))
       .catch((e) => {
-        console.log(e);
         showError(e);
         setIsFetching(false);
       });

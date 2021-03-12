@@ -272,12 +272,6 @@ const Main = () => {
     };
   }, [sideBarWidth]);
 
-  // store.onDidChange('view', ({ showSideBar, sideBarWidth }) => {
-  //   console.log('Settings changed', showSideBar, sideBarWidth);
-  //   setShowSideBar(showSideBar);
-  //   setSideBarWidth(showSideBar ? sideBarWidth : 0);
-  // });
-
   const removePaper = (p: Paper) => {
     p.remove();
     setShowPaperInfo(false);

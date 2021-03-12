@@ -151,7 +151,6 @@ function PdfViewer({ width, top, paper = null, addToLibrary }: PdfViewerProps) {
       if (isDarkMode) {
         const ctx = canvas.getContext('2d');
         if (ctx) {
-          console.log('invert');
           const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           let i: number;
           for (i = 0; i < imgData.data.length; i += 4) {
@@ -214,7 +213,6 @@ function PdfViewer({ width, top, paper = null, addToLibrary }: PdfViewerProps) {
 
   const adjustPopperPosition = (el: Element) => {
     const rect = el.getBoundingClientRect();
-    console.log(el, rect);
     const dest = el.getAttribute('href')?.slice(1);
     if (dest) {
       setPopupInfo({
