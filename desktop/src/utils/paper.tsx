@@ -89,7 +89,7 @@ class Paper {
   constructor(p: Record<string, unknown> | null = null) {
     if (p) {
       Object.assign(this, p);
-      this.refresh();
+      if (this.title) this.refresh();
     }
   }
 
@@ -128,6 +128,7 @@ class Paper {
 
   saveCache() {
     this.refresh();
+    this.mayGenerateId();
     if (this.cachePath) {
       fs.mkdir(
         `${store.get('dataLocation')}/cache`,
@@ -163,6 +164,18 @@ class Paper {
     }
   }
 
+  mayGenerateId() {
+    if (this.id) return;
+    if (this.authors.length > 0 && this.year && this.title) {
+      this.id =
+        this.authors[0].split(' ').slice(-1)[0].toLowerCase() +
+        this.year +
+        this.title.replace(/\W/g, ' ').split(' ')[0].toLowerCase();
+    } else {
+      this.id = Math.random().toString(36).slice(2);
+    }
+  }
+
   refresh() {
     this.tags = [
       ...new Set(
@@ -178,17 +191,6 @@ class Paper {
       this.authorShort = `${this.authors[0].split(' ').slice(-1).pop()} et al.`;
     } else {
       this.authorShort = this.authors.join(', ');
-    }
-
-    if (!this.id) {
-      if (this.authors.length > 0 && this.year && this.title) {
-        this.id =
-          this.authors[0].split(' ').slice(-1)[0].toLowerCase() +
-          this.year +
-          this.title.replace(/\W/g, ' ').split(' ')[0].toLowerCase();
-      } else {
-        this.id = Math.random().toString(36).slice(2);
-      }
     }
 
     this.cachePath = `${store.get('dataLocation')}/cache/${this.id}.yaml`;
@@ -279,8 +281,11 @@ class Paper {
     }
   }
 
+  openUrl() {
+    if (this.pdfUrl) shell.openExternal(this.pdfUrl);
+  }
+
   async fetch() {
-    console.trace();
     this.isFetching = true;
     await fetchPaper(this);
 
@@ -373,6 +378,7 @@ class Paper {
     );
 
     this.refresh();
+    this.mayGenerateId();
     return this;
   }
 }

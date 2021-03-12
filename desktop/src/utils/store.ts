@@ -9,6 +9,7 @@ export const store = new Store({
   defaults: {
     userDataPath: app?.getPath('userData'),
     dataLocation: app?.getPath('userData'),
+    theme: 'light',
     paperLocation: path.join(app?.getPath('downloads') || '.', 'PaperShelf'),
     autoDownload: false,
     paperList: {
@@ -17,7 +18,12 @@ export const store = new Store({
       expandedHeaderFormat: '{title} ({authorShort}, {venueAndYear})',
       expandedContentFormat: '{abstract}',
     },
-    paperListActionButtons: ['star'],
+    paperTab: {
+      max: 4,
+      headerFormat: '{title}',
+      contentFormat: '{authorShort} ({venueAndYear})',
+    },
+    paperListActionButtons: ['star', 'add'],
     paperSources: {
       'Microsoft Research': {
         primaryKey: null,
@@ -32,7 +38,7 @@ export const store = new Store({
       showSideBar: true,
       sideBarWidth: 300,
     },
-    defaultTags: ['year:2020', 'year:2021'],
+    defaultTags: [],
     pdfViewerToolbar: [
       'info',
       'divider',

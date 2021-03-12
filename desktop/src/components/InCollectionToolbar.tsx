@@ -1,6 +1,14 @@
-import { AcceptIcon, ArrowSortIcon, Toolbar } from '@fluentui/react-northstar';
+import {
+  AcceptIcon,
+  ArrowSortIcon,
+  ComponentEventHandler,
+  Toolbar,
+} from '@fluentui/react-northstar';
 import React, { useState } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
+import { remote } from 'electron';
+
+const { Menu } = remote;
 
 export enum SortType {
   ByTitle = 'title',
@@ -31,42 +39,51 @@ const InCollectionToolbar = ({
         {
           key: 'sort',
           icon: <ArrowSortIcon />,
-          menu: [
-            {
-              key: 'byDateAdded',
-              content: 'By Added Date',
-              icon: sort === SortType.ByDateAdded ? <AcceptIcon /> : null,
-              onClick: () => onSort(SortType.ByDateAdded),
-              selected: sort === SortType.ByDateAdded,
-            },
-            {
-              key: 'byDateModified',
-              content: 'By Modified Date',
-              icon: sort === SortType.ByDateModified ? <AcceptIcon /> : null,
-              onClick: () => onSort(SortType.ByDateModified),
-            },
-            {
-              key: 'byYear',
-              content: 'By Published Year',
-              icon: sort === SortType.ByYear ? <AcceptIcon /> : null,
-              onClick: () => onSort(SortType.ByYear),
-            },
-            {
-              key: 'byCitation',
-              content: 'By Citation',
-              icon: sort === SortType.ByCitation ? <AcceptIcon /> : null,
-              onClick: () => onSort(SortType.ByCitation),
-            },
-            {
-              key: 'byTitle',
-              content: 'By Title',
-              icon: sort === SortType.ByTitle ? <AcceptIcon /> : null,
-              onClick: () => onSort(SortType.ByTitle),
-            },
-          ],
-          active: sortMenuOpen,
-          menuOpen: sortMenuOpen,
-          onMenuOpenChange: (_, p) => setSortMenuOpen(p?.menuOpen),
+          onClick: (e: React.SyntheticEvent) => {
+            const menu = Menu.buildFromTemplate([
+              {
+                type: 'checkbox',
+                label: 'By Added Date',
+                checked: sort === SortType.ByDateAdded,
+                // icon: sort === SortType.ByDateAdded ? <AcceptIcon /> : null,
+                click: () => onSort(SortType.ByDateAdded),
+              },
+              {
+                type: 'checkbox',
+                label: 'By Modified Date',
+                checked: sort === SortType.ByDateModified,
+                // icon: sort === SortType.ByDateModified ? <AcceptIcon /> : null,
+                click: () => onSort(SortType.ByDateModified),
+              },
+              {
+                type: 'checkbox',
+                label: 'By Published Year',
+                checked: sort === SortType.ByYear,
+                // icon: sort === SortType.ByYear ? <AcceptIcon /> : null,
+                click: () => onSort(SortType.ByYear),
+              },
+              {
+                type: 'checkbox',
+                label: 'By Citation',
+                checked: sort === SortType.ByCitation,
+                // icon: sort === SortType.ByCitation ? <AcceptIcon /> : null,
+                click: () => onSort(SortType.ByCitation),
+              },
+              {
+                type: 'checkbox',
+                label: 'By Title',
+                checked: sort === SortType.ByTitle,
+                // icon: sort === SortType.ByTitle ? <AcceptIcon /> : null,
+                click: () => onSort(SortType.ByTitle),
+              },
+            ]);
+            const rect = e.currentTarget.getBoundingClientRect();
+            menu.popup({
+              window: remote.getCurrentWindow(),
+              y: 36,
+              x: rect.left,
+            });
+          },
         },
         // {
         //  key: 'source',

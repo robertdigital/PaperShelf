@@ -5,7 +5,6 @@ import {
   Flex,
   FormInput,
   FormField,
-  TrashCanIcon,
   ArrowLeftIcon,
   Loader,
   Text,
@@ -14,10 +13,10 @@ import {
   ListItemProps,
   Box,
   Segment,
-  EditIcon,
   Table,
   Tree,
   TreeItemProps,
+  LockIcon,
 } from '@fluentui/react-northstar';
 import CreatableSelect from 'react-select/creatable';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -77,13 +76,13 @@ const TabContent = ({
 type PaperInfoProps = {
   paper: Paper | null;
   onClose: () => void;
-  onRemovePaper: (paper: Paper) => void;
+  top: number;
 };
 
 export default function PaperInfo({
   paper: currentPaper,
   onClose,
-  onRemovePaper,
+  top,
 }: PaperInfoProps) {
   const [paper, setPaper] = useState<Paper | null>(null);
 
@@ -101,12 +100,6 @@ export default function PaperInfo({
         showError(e);
         setIsFetching(false);
       });
-  };
-
-  const remove = () => {
-    if (paper != null) {
-      onRemovePaper(paper);
-    }
   };
 
   const changePaper = (newPaper: Paper | null) => {
@@ -211,6 +204,7 @@ export default function PaperInfo({
           items={paper?.references.map(
             (p) =>
               ({
+                key: p.title,
                 header: p.title,
                 content: `${p.authors?.join(', ')} (${
                   p.venue + (p.venue ? ' ' : '') + p.year
@@ -231,6 +225,7 @@ export default function PaperInfo({
           items={paper?.citations.map(
             (p) =>
               ({
+                key: p.title,
                 header: p.title,
                 content: `${p.authors?.join(', ')} (${
                   p.venue + (p.venue ? ' ' : '') + p.year
@@ -336,19 +331,18 @@ export default function PaperInfo({
         </Flex>
         <Flex gap="gap.small">
           <Button
+            content={isAutoFill ? 'Locked' : 'Unlocked'}
             text
-            content={isAutoFill ? 'Off' : 'On'}
-            icon={<EditIcon />}
+            icon={<LockIcon />}
             primary={!isAutoFill}
             onClick={() => setIsAutoFill(!isAutoFill)}
           />
           <Button
+            content="Fetch"
             text
-            iconOnly
             icon={isFetching ? <Loader size="small" /> : <DownloadIcon />}
             onClick={() => fetch()}
           />
-          <Button text iconOnly icon={<TrashCanIcon />} onClick={remove} />
         </Flex>
       </Flex>
       <Flex column padding="padding.medium" gap="gap.medium">
@@ -360,7 +354,10 @@ export default function PaperInfo({
             onSelectedIndexChange={(_, p) => {
               setCurrentSection(p?.selectedIndex);
             }}
-            items={sections.map((it) => ({ header: it.header }))}
+            items={sections.map((it) => ({
+              key: it.header,
+              header: it.header,
+            }))}
           />
           {sections.map(
             (it, idx) =>

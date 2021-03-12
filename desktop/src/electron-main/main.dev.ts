@@ -11,18 +11,18 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import Store from 'electron-store';
 import electronDl, { download } from 'electron-dl';
 import fs from 'fs';
 import { IpcMainInvokeEvent } from 'electron/main';
-import MenuBuilder from './menu';
-import initContextMenu from './contextMenu';
+import buildMenu from './menu';
 import Paper from '../utils/paper';
 import { showPreferences } from './modal';
 import { store } from '../utils/store';
+import { onRebuildApplicationMenu, onSetEditMenu } from '../utils/broadcast';
 
 electronDl();
 Store.initRenderer();
@@ -36,6 +36,7 @@ export default class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+const contextMenu: Menu | null = null;
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -111,8 +112,7 @@ const createWindow = async () => {
     mainWindow = null;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
+  buildMenu(mainWindow);
 
   // Open urls in the user's browser
   mainWindow.webContents.on('new-window', (event, url) => {
@@ -121,6 +121,10 @@ const createWindow = async () => {
   });
 
   mainWindow.webContents.on('will-navigate', (event) => {
+    event.preventDefault();
+  });
+
+  mainWindow.webContents.on('context-menu', (event) => {
     event.preventDefault();
   });
 
@@ -141,11 +145,13 @@ app.on('window-all-closed', () => {
   }
 });
 
-app
-  .whenReady()
-  .then(createWindow)
-  .then(() => initContextMenu(mainWindow!))
-  .catch(console.log);
+(async () => {
+  await app.whenReady();
+  await createWindow();
+  if (!mainWindow) {
+    console.log('Window cannot start.');
+  }
+})();
 
 ipcMain.on('modal-edit-paper', (_, p?: Paper) => {
   const win = new BrowserWindow({
@@ -213,5 +219,15 @@ app.on('activate', () => {
 });
 
 ipcMain.on('context', (_, { itemType, itemId }) => {
+  contextMenu?.popup({
+    window: mainWindow,
+  });
   console.log('main-context-menu', itemType, itemId);
 });
+
+onRebuildApplicationMenu(
+  (paper?: Paper, collections?: { name: string; key: string }[]) => {
+    if (!mainWindow) return;
+    buildMenu(mainWindow, paper, collections);
+  }
+);

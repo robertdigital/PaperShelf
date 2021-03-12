@@ -15,18 +15,22 @@ import {
   Popup,
   Segment,
 } from '@fluentui/react-northstar';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 
-import PdfViewerToolbar from './PdfViewerToolbar';
 import PaperInfoPopup from './PaperInfoPopup';
 import Paper from '../utils/paper';
 import { Destination } from '../utils/analyze-pdf';
 
+import { MenuId } from '../utils/broadcast';
+import { store } from '../utils/store';
+
+const { Menu } = remote;
+
 type PdfViewerProps = {
   width: number;
+  top: number;
   paper: Paper | null;
   addToLibrary: (paper: Paper) => void;
-  showInfo: () => void;
 };
 
 const stringToHighlight = 'deep';
@@ -57,12 +61,7 @@ function highlightPattern(text: string) {
   //   .slice(0, -1);
 }
 
-function PdfViewer({
-  width,
-  paper = null,
-  addToLibrary,
-  showInfo,
-}: PdfViewerProps) {
+function PdfViewer({ width, top, paper = null, addToLibrary }: PdfViewerProps) {
   const padLeft = 8;
   const padRight = 0;
   const padTop = 8;
@@ -87,30 +86,48 @@ function PdfViewer({
   }>();
   const container = useRef<ElementRef<'div'>>();
   const pageRef: Record<number, ElementRef<'div'> | null> = {};
+  const canvasRef: Record<number, ElementRef<'canvas'> | null> = {};
+  const [pageReady, setPageReady] = useState<Record<number, boolean>>({});
   const popperRef = useRef<PopperRefHandle>();
+  const isDarkMode = store.get('theme') === 'dark';
 
   const zoom = (p: number) => {
-    setZoomPercentage(p);
     if (!paper) return;
-    // const currentWidth = (width - 2 * padding) * p / 100 + 2 * padding;
-    // container.current.scrollLeft = (currentWidth - width) / 2;
     paper.zoomPercentage = p;
     paper.serialize();
+    setZoomPercentage(p);
   };
+
+  const zoomIn = () => {
+    zoom(zoomPercentage + 10);
+  };
+  const zoomOut = () => {
+    zoom(zoomPercentage - 10);
+  };
+
+  useEffect(() => {
+    ipcRenderer.on(MenuId.VIEW_ZOOM_IN, zoomIn);
+    ipcRenderer.on(MenuId.VIEW_ZOOM_OUT, zoomOut);
+    return () => {
+      ipcRenderer.removeListener(MenuId.VIEW_ZOOM_IN, zoomIn);
+      ipcRenderer.removeListener(MenuId.VIEW_ZOOM_OUT, zoomOut);
+    };
+  }, []);
 
   const onDocumentLoadSuccess = ({ numPages: num }: { numPages: number }) => {
     setNumPages(num);
     zoom(paper?.zoomPercentage || 1);
+    setPageReady({});
   };
 
   const onItemClick = ({ pageNumber }: { pageNumber: string }) => {
     // console.log(p);
   };
 
-  const onRenderSuccess = async (i: number) => {
+  const onRenderSuccess = async (pageIdx: number) => {
     if (!paper) return;
     zoom(paper?.zoomPercentage);
-    const pageDom = pageRef[i]?.querySelector(
+    const pageDom = pageRef[pageIdx]?.querySelector(
       'div.react-pdf__Page__textContent'
     ) as HTMLElement;
 
@@ -129,12 +146,29 @@ function PdfViewer({
       }));
     */
 
+    const canvas = canvasRef[pageIdx];
+    if (canvas) {
+      if (isDarkMode) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          console.log('invert');
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          let i: number;
+          for (i = 0; i < imgData.data.length; i += 4) {
+            imgData.data[i] = 255 - imgData.data[i];
+            imgData.data[i + 1] = 255 - imgData.data[i + 1];
+            imgData.data[i + 2] = 255 - imgData.data[i + 2];
+            imgData.data[i + 3] = 255;
+          }
+          ctx.putImageData(imgData, 0, 0);
+          setPageReady({ ...pageReady, [i]: true });
+        }
+      }
+    }
     if (!paper.thumbnail) {
-      const canvasDom = pageRef[0]?.querySelector(
-        'div canvas'
-      ) as HTMLCanvasElement;
-      if (canvasDom) {
-        const url = canvasDom.toDataURL('image/jpg', 0.8);
+      const canvasFirst = canvasRef[0];
+      if (canvasFirst) {
+        const url = canvasFirst.toDataURL('image/jpg', 0.8);
         const base64Data = url.replace(/^data:image\/png;base64,/, '');
         const path = await ipcRenderer.invoke('save-thumbnail', {
           paper,
@@ -222,27 +256,57 @@ function PdfViewer({
     setShowPopup(false);
   };
 
+  const onContextMenu = (e: React.UIEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const menu = Menu.buildFromTemplate([
+      {
+        role: 'copy',
+      },
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Zoom In',
+        click: zoomIn,
+        enabled: !!paper,
+      },
+      {
+        label: 'Zoom Out',
+        click: zoomOut,
+        enabled: !!paper,
+      },
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Open in Default App',
+        click() {
+          paper?.openPdf();
+        },
+        enabled: !!paper,
+      },
+    ]);
+    menu.popup({
+      window: remote.getCurrentWindow(),
+    });
+  };
+
   return (
-    <Flex column styles={{ width: '100%', height: '100%' }}>
-      <PdfViewerToolbar
-        zoomPercentage={zoomPercentage}
-        zoom={zoom}
-        paper={paper}
-        showInfo={showInfo}
-      />
+    <Flex column styles={{ width: '100%', height: `calc(100vh - ${top}px)` }}>
       <Box
         style={{
           overflowY: 'auto',
           overflowX: 'hidden',
           position: 'relative',
           width: '100%',
-          height: 'calc(100% - 32px)',
+          height: '100%',
           padding: `${padTop}px 0 0 ${padLeft}px`,
-          backgroundColor: 'gray',
+          backgroundColor: 'white',
         }}
         onScroll={onScroll}
         onClick={onClick}
         onKeyDown={onClick}
+        onContextMenu={onContextMenu}
         ref={container}
       >
         {false && (
@@ -251,7 +315,7 @@ function PdfViewer({
               position: 'fixed',
               left: popupInfo?.x,
               top: popupInfo?.y,
-              backgroundColor: 'white',
+              backgroundColor: isDarkMode ? 'black' : 'white',
               zIndex: 1000,
             }}
           >
@@ -305,19 +369,18 @@ function PdfViewer({
                 <Box
                   key={i}
                   style={{
-                    border: 'gray',
-                    backgroundColor: 'gray',
                     overflowX: 'hidden',
                     overflowY: 'hidden',
                     width: `calc(100% - ${padLeft + padRight})`,
                     height: pageHeight,
+                    borderBottom: '1px solid gray',
                   }}
                 >
                   <Box
                     style={{
                       position: 'relative',
                       left: (viewWidth - padLeft - padRight) * pageMarginLeft,
-                      backgroundColor: 'white',
+                      backgroundColor: isDarkMode ? 'black' : 'white',
                       width: pageWidth,
                     }}
                   >
@@ -337,6 +400,9 @@ function PdfViewer({
                           onLoadSuccess={onPageLoadSuccess}
                           noData={<Box style={{ height: pageHeight }} />}
                           loading={<Box style={{ height: pageHeight }} />}
+                          canvasRef={(ref) => {
+                            canvasRef[i] = ref;
+                          }}
                         />
                       )}
                     </div>

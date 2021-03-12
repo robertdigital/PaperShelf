@@ -14,7 +14,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { BiHide } from 'react-icons/bi';
 import { GiBookshelf } from 'react-icons/gi';
-import Collection, { getCollections } from '../utils/collection';
+import Collection from '../utils/collection';
 
 const NewCollectionPopup = ({ onAdd }: { onAdd: (name: string) => void }) => {
   const [name, setName] = useState<string>();
@@ -46,7 +46,7 @@ const NewCollectionPopup = ({ onAdd }: { onAdd: (name: string) => void }) => {
 };
 
 type CollectionToolbarProps = {
-  onChangeCollection: (c: Collection) => void;
+  onChangeCollection: (c?: Collection) => void;
   allCollections: Collection[];
   setAllCollections: (cs: Collection[]) => void;
 };
@@ -62,9 +62,7 @@ const CollectionToolbar = ({
     false
   );
 
-  useEffect(() => setAllCollections(getCollections()), []);
-
-  const changeCollection = (c: Collection) => {
+  const changeCollection = (c?: Collection) => {
     setCollection(c);
     onChangeCollection(c);
   };
@@ -140,6 +138,9 @@ const CollectionToolbar = ({
       icon: <TrashCanIcon />,
       onClick: () => {
         collection?.delete();
+        setAllCollections(
+          allCollections.filter((c) => c.key !== collection?.key)
+        );
         changeCollection(undefined);
       },
     },
@@ -194,7 +195,7 @@ const CollectionToolbar = ({
       content: (
         <Button
           content={collection?.name || 'All'}
-          styles={{ color: 'brand', minWidth: 0 }}
+          styles={{ minWidth: 0 }}
           text
         />
       ),

@@ -1,16 +1,23 @@
 import { throttle } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 import { Flex, Box } from '@fluentui/react-northstar';
+import { ipcRenderer, remote } from 'electron';
 import PdfViewer from './components/PdfViewer';
 import PaperList from './components/PaperList';
 import './App.global.css';
 
 import PaperInfo from './components/PaperInfo';
+import Home from './components/Home';
 import Paper, { getLocalPapers } from './utils/paper';
+import PaperTabBar from './components/PaperTabBar';
 import { store } from './utils/store';
 import About from './views/about';
 import Preferences from './views/preferences';
+import { MenuId, rebuildApplicationMenu } from './utils/broadcast';
+import Collection, { getCollections } from './utils/collection';
+
+const { Menu } = remote;
 
 enum View {
   Regular,
@@ -29,14 +36,78 @@ const Main = () => {
 
   const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null);
   const [allPapers, setAllPapers] = useState<Paper[]>([]);
+  const [allCollections, setAllCollections] = useState<Collection[]>([]);
 
+  const listRef = useRef();
+
+  const refreshList = (reload = false) => {
+    if (listRef) listRef.current.refresh(reload);
+  };
   const loadPapers = () => setAllPapers(getLocalPapers());
+  const loadCollections = () => {
+    const cs = getCollections();
+    setAllCollections(cs);
+    refreshApplicationMenu(undefined, cs);
+  };
 
   const addToLibrary = (paper: Paper) => {
     if (!allPapers.map((p) => p.id).includes(paper.id)) {
       paper.addToLibrary();
       paper.serialize();
       setAllPapers([...allPapers, paper]);
+    }
+  };
+
+  const refreshApplicationMenu = (
+    paper?: Paper,
+    collections?: Collection[]
+  ) => {
+    const p = paper || selectedPaper || undefined;
+    const cs = collections || allCollections;
+    rebuildApplicationMenu(
+      p,
+      cs.map((c) => ({
+        name: c.name,
+        key: c.key,
+        checked: p?.id && c.has(p?.id),
+      }))
+    );
+  };
+
+  const fetch = (paper: Paper) => {
+    paper.isFetching = true;
+    refreshList();
+    paper
+      .fetch()
+      .then(() => {
+        refreshList();
+        return true;
+      })
+      .catch(() => {});
+  };
+
+  // Handle menu items
+  const onViewShowInfo = () => setShowPaperInfo(!showPaperInfo);
+  const onViewShowPaperList = () =>
+    changeView(view === View.Regular ? View.PdfViewerOnly : View.Regular);
+  const onEditAddToFavorites = () => selectedPaper?.toggleStar();
+  const onEditDownload = () => selectedPaper?.download();
+  const onEditRemove = () => {
+    if (selectedPaper) removePaper(selectedPaper);
+  };
+  const onEditFetch = () => {
+    if (selectedPaper) fetch(selectedPaper);
+  };
+  const onAddToCollection = (_, { key }: { key: string }) => {
+    if (selectedPaper) {
+      allCollections.some((c) => {
+        if (c.key === key) {
+          if (selectedPaper.id) c.toggle(selectedPaper.id);
+          refreshList(true);
+          return true;
+        }
+        return false;
+      });
     }
   };
 
@@ -54,18 +125,125 @@ const Main = () => {
       }
     });
     */
+    ipcRenderer.on(MenuId.VIEW_SHOW_INFO, onViewShowInfo);
+    ipcRenderer.on(MenuId.VIEW_SHOW_PAPER_LIST, onViewShowPaperList);
+    ipcRenderer.on(MenuId.EDIT_ADD_TO_FAVORITES, onEditAddToFavorites);
+    ipcRenderer.on(MenuId.EDIT_DOWNLOAD, onEditDownload);
+    ipcRenderer.on(MenuId.EDIT_REMOVE, onEditRemove);
+    ipcRenderer.on(MenuId.EDIT_FETCH, onEditFetch);
+    ipcRenderer.on(MenuId.EDIT_ADD_TO_COLLECTION, onAddToCollection);
+
+    return () => {
+      ipcRenderer.removeListener(MenuId.VIEW_SHOW_INFO, onViewShowInfo);
+      ipcRenderer.removeListener(
+        MenuId.VIEW_SHOW_PAPER_LIST,
+        onViewShowPaperList
+      );
+      ipcRenderer.removeListener(
+        MenuId.EDIT_ADD_TO_FAVORITES,
+        onEditAddToFavorites
+      );
+      ipcRenderer.removeListener(MenuId.EDIT_DOWNLOAD, onEditDownload);
+      ipcRenderer.removeListener(MenuId.EDIT_REMOVE, onEditRemove);
+      ipcRenderer.removeListener(MenuId.EDIT_FETCH, onEditFetch);
+      ipcRenderer.removeListener(
+        MenuId.EDIT_ADD_TO_COLLECTION,
+        onAddToCollection
+      );
+    };
   });
+
+  const getListContextMenu = (p: Paper) =>
+    Menu.buildFromTemplate([
+      {
+        label: 'Add to Library',
+        visible: !p.inLibrary,
+        click() {
+          addToLibrary(p);
+        },
+      },
+      {
+        label: 'Add to Collection',
+        submenu: allCollections.map((c) => ({
+          type: 'checkbox',
+          label: c.name,
+          checked: p.inCollection(c),
+          click: () => {
+            c.toggle(p.id!);
+            refreshList(true);
+          },
+        })),
+        visible: p.inLibrary,
+      },
+      {
+        label: p.starred ? 'Remove from Favorites' : 'Add to Favorites',
+        click() {
+          p.toggleStar();
+          refreshList();
+        },
+      },
+      {
+        label: 'Refresh Paper Details',
+        enabled: p.inLibrary,
+        click() {
+          fetch(p);
+        },
+      },
+      {
+        label: 'Download PDF',
+        enabled: p.inLibrary && !p.localPath,
+        click() {
+          p.download();
+        },
+      },
+      {
+        label: 'Show Details',
+        click() {
+          refreshList();
+          setShowPaperInfo(true);
+        },
+      },
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Open URL',
+        enabled: !!p,
+        click() {
+          p?.openUrl();
+        },
+      },
+      {
+        label: 'Open in Default App',
+        enabled: !!p.getLocalPath(),
+        click() {
+          p.openPdf();
+        },
+      },
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Remove from Library',
+        click() {
+          removePaper(p);
+        },
+        visible: p.inLibrary,
+      },
+    ]);
 
   const changeView = (v: View) => {
     setView(v);
     switch (v) {
       case View.Regular:
+        setSideBarWidth(store.get('view.sideBarWidth'));
         break;
       case View.PdfViewerOnly:
-        setPdfWidth('100vw');
+        setPdfWidth(window.innerWidth);
+        setSideBarWidth(0);
         break;
       case View.SideBarOnly:
-        setSideBarWidth('100vw');
+        setSideBarWidth(window.innerWidth);
         break;
       default:
         break;
@@ -84,6 +262,7 @@ const Main = () => {
     };
 
     loadPapers();
+    loadCollections();
 
     setSize();
     window.addEventListener('resize', throttle(setSize, 500));
@@ -103,7 +282,7 @@ const Main = () => {
     p.remove();
     setShowPaperInfo(false);
     setSelectedPaper(null);
-    loadPapers(); // TODO: avoid reloading all papers
+    setAllPapers(allPapers.filter((paper) => paper.id !== p.id));
   };
 
   return (
@@ -120,13 +299,18 @@ const Main = () => {
               <PaperList
                 expanded={view === View.SideBarOnly}
                 allPapers={allPapers}
+                allCollections={allCollections}
+                setAllCollections={setAllCollections}
                 addToLibrary={addToLibrary}
-                onChange={(p) => setSelectedPaper(p || null)}
-                onShowInfo={() => setShowPaperInfo(true)}
-                onRemovePaper={(p) => removePaper(p)}
+                getContextMenu={getListContextMenu}
+                onChange={(p) => {
+                  setSelectedPaper(p || null);
+                  refreshApplicationMenu(p);
+                }}
                 onExpand={(val: boolean) =>
                   setView(val ? View.SideBarOnly : View.Regular)
                 }
+                ref={listRef}
               />
             </Box>
           )}
@@ -140,18 +324,27 @@ const Main = () => {
               {showPaperInfo ? (
                 <PaperInfo
                   paper={selectedPaper}
+                  top={42}
                   onClose={() => setShowPaperInfo(false)}
-                  onRemovePaper={(p) => removePaper(p)}
                 />
               ) : (
-                <PdfViewer
-                  paper={selectedPaper}
-                  width={pdfWidth}
-                  addToLibrary={addToLibrary}
-                  showInfo={() => {
-                    setShowPaperInfo(true);
-                  }}
-                />
+                <Flex column>
+                  <PaperTabBar
+                    paper={selectedPaper}
+                    setPaper={setSelectedPaper}
+                    height={42}
+                  />
+                  {selectedPaper ? (
+                    <PdfViewer
+                      paper={selectedPaper}
+                      width={pdfWidth}
+                      top={42}
+                      addToLibrary={addToLibrary}
+                    />
+                  ) : (
+                    <Home top={42} allPapers={allPapers} />
+                  )}
+                </Flex>
               )}
             </Box>
           )}
