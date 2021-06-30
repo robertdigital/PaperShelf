@@ -6,6 +6,10 @@
 [![Test](https://github.com/trungd/PaperShelf/actions/workflows/test.yml/badge.svg)](https://github.com/trungd/PaperShelf/actions/workflows/test.yml)
 [![Publish](https://github.com/trungd/PaperShelf/actions/workflows/publish.yml/badge.svg)](https://github.com/trungd/PaperShelf/actions/workflows/publish.yml)
 
+View the web app at [https://paper-shelf.web.app/](https://paper-shelf.web.app/)
+
+[Home Page](https://trungd.github.io/PaperShelf/)
+
 ![Screenshot](./screenshot.png)
 
 ## Why [PaperShelf](https://trungd.github.io/PaperShelf/)?
