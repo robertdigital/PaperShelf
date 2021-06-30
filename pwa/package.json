@@ -1,0 +1,66 @@
+{
+  "name": "pwa",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@firebase/auth": "^0.16.4",
+    "@fluentui/react-northstar": "^0.57.0",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^12.0.0",
+    "@testing-library/user-event": "^13.1.9",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^15.12.5",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "firebase": "^8.3.1",
+    "format-unicorn": "^1.1.1",
+    "fuse.js": "^6.4.6",
+    "lodash": "^4.17.21",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-firebaseui": "^5.0.2",
+    "react-icons": "^4.2.0",
+    "react-pdf": "5.1.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
+    "react-select": "^4.2.1",
+    "react-textarea-autosize": "^8.3.2",
+    "typescript": "^4.1.2",
+    "web-vitals": "^2.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "start-sw": "http-server ./build",
+    "deploy": "yarn build && firebase deploy"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/format-unicorn": "^1.1.2",
+    "@types/js-yaml": "^4.0.0",
+    "@types/lodash": "^4.14.168",
+    "@types/react-pdf": "5.0.1",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/react-select": "^4.0.13",
+    "http-server": "^0.12.3"
+  }
+}
